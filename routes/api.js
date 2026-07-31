@@ -13,15 +13,11 @@ module.exports = (api) => {
         }
     };
 
-    // Fungsi bantuan untuk mengekstrak pesan error dengan aman
     const getErrorMessage = (error) => {
         if (error.response && error.response.data) {
-            // Jika server target/proxy merespon dengan JSON
             if (error.response.data.message) return error.response.data.message;
-            // Jika server target/proxy merespon dengan HTML/Teks (misal: diblokir Cloudflare)
             if (typeof error.response.data === 'string') return `Error Server Target (Status ${error.response.status})`;
         }
-        // Jika request gagal total (misal: timeout atau proxy mati)
         return error.message || 'Koneksi ke server target terputus.';
     };
 
@@ -29,8 +25,8 @@ module.exports = (api) => {
     router.post('/send', async (req, res) => {
         try {
             const { email } = req.body;
-            // Gunakan true untuk proxy
-            const targetUrl = api.buildUrl(api.endpoints.send, true); 
+            // Ubah menjadi false agar request langsung menembak ke server asli
+            const targetUrl = api.buildUrl(api.endpoints.send, false); 
             
             const response = await axios.post(targetUrl, { email: email }, axiosConfig);
             res.status(200).json(response.data);
@@ -44,7 +40,8 @@ module.exports = (api) => {
     router.post('/verify', async (req, res) => {
         try {
             const { email, rawLink } = req.body;
-            const targetUrl = api.buildUrl(api.endpoints.verify, true);
+            // Ubah menjadi false
+            const targetUrl = api.buildUrl(api.endpoints.verify, false);
             
             const response = await axios.post(targetUrl, { email: email, rawLink: rawLink }, axiosConfig);
             res.status(200).json(response.data);
@@ -58,7 +55,8 @@ module.exports = (api) => {
     router.post('/premium', async (req, res) => {
         try {
             const { email, idToken } = req.body;
-            const targetUrl = api.buildUrl(api.endpoints.premium, true);
+            // Ubah menjadi false
+            const targetUrl = api.buildUrl(api.endpoints.premium, false);
             
             const response = await axios.post(targetUrl, { email: email, idToken: idToken }, axiosConfig);
             res.status(200).json(response.data);
@@ -70,4 +68,3 @@ module.exports = (api) => {
 
     return router;
 };
-                
