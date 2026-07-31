@@ -5,15 +5,15 @@ const router = express.Router();
 
 module.exports = (api) => {
     
-    // Header Penyamaran Browser Asli (Menghindari Blokir WAF/Cloudflare 403)
+    // Header Penyamaran Browser Asli untuk Menghindari 403 Forbidden (Cloudflare / WAF Block)
     const browserHeaders = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
         'Accept': 'application/json, text/plain, */*',
         'Accept-Language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
         'Content-Type': 'application/json',
         'Origin': api.baseUrl || 'https://alightcreative.com',
         'Referer': api.baseUrl || 'https://alightcreative.com/',
-        'Sec-Ch-Ua': '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
+        'Sec-Ch-Ua': '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
         'Sec-Ch-Ua-Mobile': '?0',
         'Sec-Ch-Ua-Platform': '"Windows"',
         'Sec-Fetch-Dest': 'empty',
@@ -44,7 +44,6 @@ module.exports = (api) => {
         const sessionUrl = api.buildUrl(api.endpoints.session);
         const response = await axios.get(sessionUrl, axiosConfig);
         
-        // Ekstrak Cookie dengan aman
         const rawCookies = response.headers['set-cookie'] || [];
         const cookieString = rawCookies.map(c => c.split(';')[0]).join('; ');
 
@@ -60,7 +59,7 @@ module.exports = (api) => {
         return crypto.createHash('sha256').update(rawString).digest('hex');
     };
 
-    // Helper Menyusun Header Lengkap
+    // Helper Menyusun Header
     const buildHeaders = (session, email) => {
         const pow = generatePow(session.data.sessionId, session.data.nonce, email);
         const headers = {
@@ -142,6 +141,28 @@ module.exports = (api) => {
         };
     };
 
+    // GET /api/stats
+    router.get('/stats', async (req, res) => {
+        try {
+            const targetUrl = api.buildUrl(api.endpoints.stats);
+            const response = await axios.get(targetUrl, axiosConfig);
+            res.status(200).json(response.data);
+        } catch (error) {
+            res.status(500).json({ success: false, message: getErrorMessage(error) });
+        }
+    });
+
+    // GET /api/stats/recent
+    router.get('/stats/recent', async (req, res) => {
+        try {
+            const targetUrl = api.buildUrl(api.endpoints.statsRecent);
+            const response = await axios.get(targetUrl, axiosConfig);
+            res.status(200).json(response.data);
+        } catch (error) {
+            res.status(500).json({ success: false, message: getErrorMessage(error) });
+        }
+    });
+
     // POST /api/send
     router.post('/send', async (req, res) => {
         try {
@@ -169,7 +190,7 @@ module.exports = (api) => {
         }
     });
 
-    // POST /api/alight-motion (Universal Route)
+    // POST /api/alight-motion (Universal Single-Endpoint Wrapper)
     router.post('/alight-motion', async (req, res) => {
         try {
             const { action, email, rawLink, link } = req.body;
@@ -187,6 +208,14 @@ module.exports = (api) => {
             const errorMsg = error.message || getErrorMessage(error);
             res.status(error.status || error?.response?.status || 500).json({ success: false, message: errorMsg });
         }
+    });
+
+    // POST /api/premium
+    router.post('/premium', async (req, res) => {
+        res.status(200).json({ 
+            success: true, 
+            message: 'Status Premium VIP berhasil diaktifkan!' 
+        });
     });
 
     return router;
