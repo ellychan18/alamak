@@ -1,0 +1,30 @@
+2026-07-31 17:36:22.149 [error] [Server Error]: ReferenceError: /var/task/views/index.ejs:11
+    9| 
+    10|     <!-- TEMPLATE BODY DINAMIS -->
+ >> 11|     <%- body %>
+    12| 
+    13|     <%- include('layout/footer') %>
+    14|     <%- include('layout/bottom-nav', { active: typeof activePage !== 'undefined' ? activePage : 'home' }) %>
+
+body is not defined
+    at eval ("/var/task/views/index.ejs":18:17)
+    at index (/var/task/node_modules/ejs/lib/ejs.js:703:17)
+    at tryHandleCache (/var/task/node_modules/ejs/lib/ejs.js:274:36)
+    at exports.renderFile [as engine] (/var/task/node_modules/ejs/lib/ejs.js:491:10)
+    at View.render (/var/task/node_modules/express/lib/view.js:135:8)
+    at tryRender (/var/task/node_modules/express/lib/application.js:657:10)
+    at app.render (/var/task/node_modules/express/lib/application.js:609:3)
+    at ServerResponse.render (/var/task/node_modules/express/lib/response.js:1049:7)
+    at res.render (/var/task/node_modules/express-ejs-layouts/lib/express-layouts.js:77:18)
+    at /var/task/routes/home.js:35:24
+2026-07-31 17:36:22.152 [error] Error: Failed to lookup view "error" in views directory "/var/task/views"
+    at app.render (/var/task/node_modules/express/lib/application.js:597:17)
+    at ServerResponse.render (/var/task/node_modules/express/lib/response.js:1049:7)
+    at res.render (/var/task/node_modules/express-ejs-layouts/lib/express-layouts.js:77:18)
+    at /var/task/index.js:57:32
+    at Layer.handle_error (/var/task/node_modules/express/lib/router/layer.js:71:5)
+    at trim_prefix (/var/task/node_modules/express/lib/router/index.js:326:13)
+    at /var/task/node_modules/express/lib/router/index.js:286:9
+    at router.process_params (/var/task/node_modules/express/lib/router/index.js:346:12)
+    at next (/var/task/node_modules/express/lib/router/index.js:280:10)
+    at Layer.handle_error (/var/task/node_modules/express/lib/router/layer.js:67:12)
