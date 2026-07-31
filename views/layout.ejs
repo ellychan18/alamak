@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <%- include('layout/head', { title: typeof title !== 'undefined' ? title : 'LyrenzDev Dashboard' }) %>
+</head>
+<body class="text-gray-900 antialiased relative">
+
+    <%- include('layout/navbar') %>
+
+    <!-- KONTEN HALAMAN DINAMIS AKAN DIRENDER DI SINI -->
+    <%- body %>
+
+    <%- include('layout/footer') %>
+    <%- include('layout/bottom-nav', { active: typeof activePage !== 'undefined' ? activePage : 'home' }) %>
+
+    <!-- SCRIPT LOGIKA VERIFIKASI / GLOBAL -->
+    <script>
+        const form1 = document.getElementById('emailForm');
+        const form2 = document.getElementById('oobForm');
+        const step3 = document.getElementById('resultStep');
+        
+        const tab1 = document.getElementById('tab1');
+        const tab2 = document.getElementById('tab2');
+        const tab3 = document.getElementById('tab3');
+        
+        const btnEmail = document.getElementById('btnEmail');
+        const btnOob = document.getElementById('btnOob');
+        
+        let userEmail = '';
+
+        const activeTabClass = 'bg-[#93c5fd] border-b-2 border-b-black text-black neo-shadow-sm relative z-10'.split(' ');
+        const inactiveTabClass = 'text-gray-500 bg-transparent shadow-none z-0 border-b-0'.split(' ');
+
+        function switchTab(tabToActivate) {
+            if (!tab1 || !tab2 || !tab3) return;
+            [tab1, tab2, tab3].forEach(t => {
+                t.classList.remove(...activeTabClass);
+                t.classList.add(...inactiveTabClass);
+            });
+            tabToActivate.classList.remove(...inactiveTabClass);
+            tabToActivate.classList.add(...activeTabClass);
+        }
+
+        function setLoadingState(button, isLoading, originalText) {
+            if (!button) return;
+            if (isLoading) {
+                button.disabled = true;
+                button.classList.add('opacity-70', 'cursor-not-allowed');
+                button.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Memproses...</span>`;
+            } else {
+                button.disabled = false;
+                button.classList.remove('opacity-70', 'cursor-not-allowed');
+                button.innerHTML = originalText;
+            }
+        }
+
+        function showResult(success, message) {
+            if (!form1 || !form2 || !step3) return;
+            form1.classList.add('hidden');
+            form2.classList.add('hidden');
+            step3.classList.remove('hidden');
+            switchTab(tab3);
+
+            const iconDiv = document.getElementById('resultIcon');
+            const title = document.getElementById('resultTitle');
+            const msg = document.getElementById('resultMessage');
+
+            if (success) {
+                iconDiv.className = 'w-20 h-20 mx-auto bg-[#a7f3d0] rounded-full border-4 border-black flex items-center justify-center text-4xl mb-4 neo-shadow-sm';
+                iconDiv.innerHTML = '<i class="fa-solid fa-check text-green-700"></i>';
+                title.innerText = 'Aktivasi Berhasil!';
+                msg.innerText = message;
+            } else {
+                iconDiv.className = 'w-20 h-20 mx-auto bg-[#fecaca] rounded-full border-4 border-black flex items-center justify-center text-4xl mb-4 neo-shadow-sm';
+                iconDiv.innerHTML = '<i class="fa-solid fa-xmark text-red-700"></i>';
+                title.innerText = 'Verifikasi Gagal';
+                msg.innerText = message;
+            }
+        }
+
+        if (form1) {
+            form1.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('emailInput').value;
+                userEmail = email;
+                
+                const originalText = btnEmail.innerHTML;
+                setLoadingState(btnEmail, true, originalText);
+
+                try {
+                    const response = await fetch('/api/send', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: email })
+                    });
+                    const result = await response.json();
+
+                    if (result.success || response.ok) {
+                        form1.classList.add('hidden');
+                        form2.classList.remove('hidden');
+                        switchTab(tab2);
+                    } else {
+                        alert('Gagal mengirim email: ' + (result.message || 'Coba lagi nanti.'));
+                    }
+                } catch (error) {
+                    alert('Terjadi kesalahan jaringan.');
+                } finally {
+                    setLoadingState(btnEmail, false, originalText);
+                }
+            });
+        }
+
+        if (form2) {
+            form2.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const rawLink = document.getElementById('oobInput').value;
+                
+                const originalText = btnOob.innerHTML;
+                setLoadingState(btnOob, true, originalText);
+
+                try {
+                    const verifyRes = await fetch('/api/verify', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: userEmail, rawLink: rawLink })
+                    });
+                    const verifyData = await verifyRes.json();
+
+                    if (verifyData.success && verifyData.idToken) {
+                        const premiumRes = await fetch('/api/premium', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ email: userEmail, idToken: verifyData.idToken })
+                        });
+                        const premiumData = await premiumRes.json();
+
+                        if (premiumData.success) {
+                            showResult(true, premiumData.message || 'Status Premium VIP berhasil diaktifkan!');
+                        } else {
+                            showResult(false, premiumData.message || 'Gagal mengaktifkan premium.');
+                        }
+                    } else {
+                        showResult(false, verifyData.message || 'Gagal memverifikasi link OOB. Pastikan link benar dan belum kedaluwarsa.');
+                    }
+                } catch (error) {
+                    showResult(false, 'Terjadi kesalahan sistem/jaringan saat memproses permintaan Anda.');
+                } finally {
+                    setLoadingState(btnOob, false, originalText);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

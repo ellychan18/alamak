@@ -3,8 +3,7 @@ const express = require('express');
 const expressLayouts = require('express-ejs-layouts'); // Integrasi layout EJS
 const path = require('path');
 const ServerData = require('./lib/ServerData');
-const apiRoutes = require('./routes/api');
-const setupRoutes = require('./routes'); // Central router/page routes
+const setupRoutes = require('./routes'); // Central router (UI & API)
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -34,10 +33,7 @@ app.use((req, res, next) => {
     next();
 });
 
-// Registrasi Route API utama (/api/stats, /api/send, /api/verify, dll)
-app.use('/api', apiRoutes);
-
-// Inisialisasi web/view routes utama (menyuapkan 'app' dan 'api' instance)
+// Registrasi Seluruh Route (UI & API) lewat Central Router setupRoutes
 if (typeof setupRoutes === 'function') {
     setupRoutes(app, api);
 }
@@ -45,7 +41,7 @@ if (typeof setupRoutes === 'function') {
 // Handler untuk halaman 404 Not Found
 app.use((req, res) => {
     if (req.accepts('html')) {
-        return res.status(404).render('404', { active: '' });
+        return res.status(404).render('404', { active: '', activePage: '' });
     }
     res.status(404).json({ success: false, message: 'Endpoint tidak ditemukan (404)' });
 });
@@ -54,7 +50,7 @@ app.use((req, res) => {
 app.use((err, req, res, next) => {
     console.error('[Server Error]:', err.stack || err.message);
     if (req.accepts('html')) {
-        return res.status(500).render('error', { error: 'Terjadi kesalahan pada server.' });
+        return res.status(500).render('error', { error: 'Terjadi kesalahan pada server.', active: '', activePage: '' });
     }
     res.status(500).json({ success: false, message: 'Terjadi kesalahan internal pada server (500)' });
 });
