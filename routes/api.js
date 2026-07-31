@@ -58,6 +58,71 @@ module.exports = (api) => {
         return headers;
     };
 
+    // Logic core untuk Send Email
+    const handleSendAction = async (email) => {
+        if (!email) throw { status: 400, message: 'Email wajib diisi' };
+
+        const session = await getSession();
+        if (!session.data?.status) throw { status: 500, message: "Gagal memuat sesi keamanan" };
+
+        const customHeaders = buildHeaders(session, email);
+        const targetUrl = api.buildUrl(api.endpoints.alight);
+        
+        const response = await axios.post(
+            targetUrl, 
+            { action: 'send', email }, 
+            { headers: customHeaders, timeout: axiosConfig.timeout }
+        );
+
+        return {
+            success: Boolean(response.data.status),
+            message: response.data.msg || 'Link OOB berhasil dikirim ke email.'
+        };
+    };
+
+    // Logic core untuk Verify OOB
+    const handleVerifyAction = async (email, link) => {
+        if (!email || !link) throw { status: 400, message: 'Email dan Link OOB wajib diisi' };
+
+        const session = await getSession();
+        if (!session.data?.status) throw { status: 500, message: "Gagal memuat sesi keamanan" };
+
+        const customHeaders = buildHeaders(session, email);
+        const targetUrl = api.buildUrl(api.endpoints.alight);
+        
+        const response = await axios.post(
+            targetUrl, 
+            { action: 'verify', email, link }, 
+            { headers: customHeaders, timeout: axiosConfig.timeout }
+        );
+
+        if (!response.data.status) {
+            throw {
+                status: 400,
+                message: response.data.msg || 'Verifikasi gagal dari server target.'
+            };
+        }
+
+        const userData = response.data.data?.user?.users?.[0] || {};
+        const premiumData = response.data.data?.premium?.result || {};
+
+        return { 
+            success: true, 
+            message: 'Aktivasi Status Pro Berhasil!', 
+            user: {
+                displayName: userData.displayName || 'User',
+                email: userData.email || email,
+                photoUrl: userData.photoUrl || null
+            },
+            premium: {
+                valid: premiumData.valid || false,
+                expiryTimeMillis: premiumData.expiryTimeMillis || null,
+                status: premiumData.status || 'unknown'
+            },
+            raw: response.data.data
+        };
+    };
+
     // GET /api/stats
     router.get('/stats', async (req, res) => {
         try {
@@ -84,84 +149,50 @@ module.exports = (api) => {
     router.post('/send', async (req, res) => {
         try {
             const { email } = req.body;
-            if (!email) return res.status(400).json({ success: false, message: 'Email wajib diisi' });
-
-            const session = await getSession();
-            if (!session.data?.status) throw new Error("Gagal memuat sesi keamanan");
-
-            const customHeaders = buildHeaders(session, email);
-            const targetUrl = api.buildUrl(api.endpoints.alight);
-            
-            const response = await axios.post(
-                targetUrl, 
-                { action: 'send', email }, 
-                { headers: customHeaders, timeout: axiosConfig.timeout }
-            );
-            
-            res.status(200).json({ 
-                success: Boolean(response.data.status), 
-                message: response.data.msg || 'Link berhasil dikirim.' 
-            });
+            const result = await handleSendAction(email);
+            res.status(200).json(result);
         } catch (error) {
-            const errorMsg = getErrorMessage(error);
+            const errorMsg = error.message || getErrorMessage(error);
             console.error('API Send Error:', errorMsg);
-            res.status(error?.response?.status || 500).json({ success: false, message: errorMsg });
+            res.status(error.status || error?.response?.status || 500).json({ success: false, message: errorMsg });
         }
     });
 
     // POST /api/verify
     router.post('/verify', async (req, res) => {
         try {
-            const { email, rawLink } = req.body;
-            if (!email || !rawLink) return res.status(400).json({ success: false, message: 'Data tidak lengkap' });
-
-            const session = await getSession();
-            if (!session.data?.status) throw new Error("Gagal memuat sesi keamanan");
-
-            const customHeaders = buildHeaders(session, email);
-            const targetUrl = api.buildUrl(api.endpoints.alight);
-            
-            const response = await axios.post(
-                targetUrl, 
-                { action: 'verify', email, link: rawLink }, 
-                { headers: customHeaders, timeout: axiosConfig.timeout }
-            );
-
-            // Validasi status verifikasi dari response server
-            if (!response.data.status) {
-                return res.status(400).json({
-                    success: false,
-                    message: response.data.msg || 'Verifikasi gagal dari server target.'
-                });
-            }
-
-            // Ekstrak data user dan status premium asli dari response
-            const userData = response.data.data?.user?.users?.[0] || {};
-            const premiumData = response.data.data?.premium?.result || {};
-
-            res.status(200).json({ 
-                success: true, 
-                message: 'Verifikasi berhasil!', 
-                user: {
-                    displayName: userData.displayName || 'User',
-                    email: userData.email,
-                    photoUrl: userData.photoUrl
-                },
-                premium: {
-                    valid: premiumData.valid || false,
-                    expiryTimeMillis: premiumData.expiryTimeMillis || null,
-                    status: premiumData.status || 'unknown'
-                },
-                raw: response.data.data
-            });
+            const { email, rawLink, link } = req.body;
+            const targetLink = rawLink || link;
+            const result = await handleVerifyAction(email, targetLink);
+            res.status(200).json(result);
         } catch (error) {
-            const errorMsg = getErrorMessage(error);
+            const errorMsg = error.message || getErrorMessage(error);
             console.error('API Verify Error:', errorMsg);
-            res.status(error?.response?.status || 500).json({ success: false, message: errorMsg });
+            res.status(error.status || error?.response?.status || 500).json({ success: false, message: errorMsg });
         }
     });
 
-    // POST /api/premium
+    // POST /api/alight-motion (Universal Single-Endpoint Wrapper)
+    router.post('/alight-motion', async (req, res) => {
+        try {
+            const { action, email, rawLink, link } = req.body;
+            if (action === 'send') {
+                const result = await handleSendAction(email);
+                return res.status(200).json(result);
+            } else if (action === 'verify') {
+                const targetLink = rawLink || link;
+                const result = await handleVerifyAction(email, targetLink);
+                return res.status(200).json(result);
+            } else {
+                return res.status(400).json({ success: false, message: 'Action tidak valid' });
+            }
+        } catch (error) {
+            const errorMsg = error.message || getErrorMessage(error);
+            res.status(error.status || error?.response?.status || 500).json({ success: false, message: errorMsg });
+        }
+    });
+
+    // POST /api/premium (Compatibility route)
     router.post('/premium', async (req, res) => {
         res.status(200).json({ 
             success: true, 
