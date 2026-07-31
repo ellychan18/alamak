@@ -4,7 +4,6 @@ const router = express.Router();
 
 module.exports = (api) => {
     
-    // Konfigurasi Header statis sesuai dengan profil yang terdeteksi valid
     const axiosConfig = {
         headers: {
             'Accept': 'application/json, text/plain, */*',
@@ -18,18 +17,15 @@ module.exports = (api) => {
     router.post('/send', async (req, res) => {
         try {
             const { email } = req.body;
-            // Kita coba direct URL dulu. Jika terblokir Vercel, ganti 'false' menjadi 'true' 
-            // agar memicu proxy https://cors.caliph.my.id/ di dalam class LyrenzDev
-            const targetUrl = api.buildUrl(api.endpoints.send, false); 
+            // Parameter diubah menjadi TRUE agar menggunakan proxy cors.caliph.my.id
+            const targetUrl = api.buildUrl(api.endpoints.send, true); 
             
             const response = await axios.post(targetUrl, { email: email }, axiosConfig);
             
-            // Meneruskan response sukses persis seperti data asli
             res.status(200).json(response.data);
         } catch (error) {
             console.error('Error /api/send:', error?.response?.data || error.message);
-            // Meneruskan format error asli dari server target
-            const errorData = error?.response?.data || { success: false, message: 'Gagal mengirim email OOB.' };
+            const errorData = error?.response?.data || { success: false, message: 'Gagal mengirim email OOB. Server target tidak merespon.' };
             res.status(error?.response?.status || 500).json(errorData);
         }
     });
@@ -38,7 +34,8 @@ module.exports = (api) => {
     router.post('/verify', async (req, res) => {
         try {
             const { email, rawLink } = req.body;
-            const targetUrl = api.buildUrl(api.endpoints.verify, false);
+            // Parameter diubah menjadi TRUE
+            const targetUrl = api.buildUrl(api.endpoints.verify, true);
             
             const response = await axios.post(targetUrl, { email: email, rawLink: rawLink }, axiosConfig);
             
@@ -54,7 +51,8 @@ module.exports = (api) => {
     router.post('/premium', async (req, res) => {
         try {
             const { email, idToken } = req.body;
-            const targetUrl = api.buildUrl(api.endpoints.premium, false);
+            // Parameter diubah menjadi TRUE
+            const targetUrl = api.buildUrl(api.endpoints.premium, true);
             
             const response = await axios.post(targetUrl, { email: email, idToken: idToken }, axiosConfig);
             
