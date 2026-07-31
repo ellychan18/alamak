@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <%- include('layout/head', { title: '404 - Tidak Ditemukan' }) %>
+</head>
+<body class="text-gray-900 antialiased h-screen flex flex-col">
+    <%- include('layout/navbar') %>
+
+    <main class="flex-grow flex items-center justify-center p-4">
+        <div class="bg-white border-2 border-black rounded-2xl p-8 max-w-sm text-center neo-shadow">
+            <div class="text-6xl mb-4 text-[#fde047]">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h1 class="text-4xl font-extrabold mb-2">404</h1>
+            <h2 class="text-lg font-bold mb-4">Halaman Tidak Ditemukan</h2>
+            <p class="text-xs font-bold text-gray-500 mb-6">Waduh, sepertinya halaman yang kamu cari tidak ada atau sudah dipindahkan.</p>
+            <a href="/" class="inline-block bg-[#93c5fd] border-2 border-black rounded-xl px-6 py-3 text-sm font-extrabold neo-btn">
+                Kembali ke Beranda
+            </a>
+        </div>
+    </main>
+
+    <%- include('layout/bottom-nav') %>
+</body>
+</html>
+
