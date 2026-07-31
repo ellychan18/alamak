@@ -20,8 +20,8 @@ module.exports = (api) => {
                 api.updateMetrics(response.data.metrics);
             }
 
-            // Render file views/home.ejs dengan data yang didapat
-            res.render('home', {
+            // PERBAIKAN: Ganti 'home' menjadi 'index' agar mengarah ke views/index.ejs
+            res.render('index', {
                 title: 'Home - LyrenzDev',
                 active: 'home',
                 metrics: api.metrics
@@ -30,8 +30,8 @@ module.exports = (api) => {
         } catch (error) {
             console.error("Gagal mengambil data statistik:", error.message);
             
-            // Tetap render halaman menggunakan data metrics bawaan (0/disconnected) jika terjadi error
-            res.render('home', {
+            // PERBAIKAN: Ganti 'home' menjadi 'index' di bagian catch juga
+            res.render('index', {
                 title: 'Home - LyrenzDev',
                 active: 'home',
                 metrics: api.metrics
