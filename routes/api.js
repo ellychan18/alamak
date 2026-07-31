@@ -21,12 +21,10 @@ module.exports = (api) => {
         return error.message || 'Koneksi ke server target terputus.';
     };
 
-    // Fungsi mengambil Sesi Otomatis & Menangkap Cookie
     const getSession = async () => {
         const sessionUrl = api.buildUrl(api.endpoints.session);
         const response = await axios.get(sessionUrl, axiosConfig);
         
-        // Tangkap cookie dari header response server target
         const rawCookies = response.headers['set-cookie'] || [];
         const cookieString = rawCookies.map(c => c.split(';')[0]).join('; ');
 
@@ -36,10 +34,10 @@ module.exports = (api) => {
         };
     };
 
-    // Fungsi pembuat Hash Proof of Work (X-Amprem-Pow)
-    const generatePow = (nonce, email) => {
-        // Kita gunakan hash SHA-256 standar.
-        return crypto.createHash('sha256').update(nonce).digest('hex');
+    // Perbaikan rumus Proof-of-Work (menggabungkan sessionId, nonce, dan email)
+    const generatePow = (sessionId, nonce, email) => {
+        const rawString = `${sessionId}:${nonce}:${email}`;
+        return crypto.createHash('sha256').update(rawString).digest('hex');
     };
 
     // POST /api/send
@@ -48,12 +46,11 @@ module.exports = (api) => {
             const { email } = req.body;
             if (!email) return res.status(400).json({ success: false, message: 'Email wajib diisi' });
 
-            // 1. Minta Sesi (Token, Nonce, dan Cookie)
             const session = await getSession();
             if (!session.data.status) throw new Error("Gagal memuat sesi API");
 
-            // 2. Siapkan Header Otentikasi
-            const pow = generatePow(session.data.nonce, email);
+            // Mengirim sessionId, nonce, dan email ke fungsi PoW
+            const pow = generatePow(session.data.sessionId, session.data.nonce, email);
             const customHeaders = {
                 ...axiosConfig.headers,
                 'X-Amprem-Token': session.data.token,
@@ -61,12 +58,10 @@ module.exports = (api) => {
                 'X-Amprem-Pow': pow
             };
             
-            // 3. Sisipkan Cookie jika server memberikannya
             if (session.cookie) {
                 customHeaders['Cookie'] = session.cookie;
             }
 
-            // 4. Eksekusi Kirim Email
             const targetUrl = api.buildUrl(api.endpoints.alight);
             const response = await axios.post(targetUrl, { action: 'send', email: email }, { headers: customHeaders });
             
@@ -87,7 +82,7 @@ module.exports = (api) => {
             const session = await getSession();
             if (!session.data.status) throw new Error("Gagal memuat sesi API");
 
-            const pow = generatePow(session.data.nonce, email);
+            const pow = generatePow(session.data.sessionId, session.data.nonce, email);
 
             const customHeaders = {
                 ...axiosConfig.headers,
