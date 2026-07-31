@@ -1,0 +1,369 @@
+Request URL
+https://www.alightpro.my.id/api/stats
+Request Method
+GET
+Status Code
+200 OK
+Remote Address
+216.198.79.1:443
+Referrer Policy
+strict-origin-when-cross-origin
+age
+0
+cache-control
+public, max-age=0, must-revalidate
+content-encoding
+br
+content-type
+application/json
+date
+Fri, 31 Jul 2026 16:51:47 GMT
+server
+Vercel
+strict-transport-security
+max-age=63072000
+vary
+rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch
+x-matched-path
+/api/stats
+x-vercel-cache
+MISS
+x-vercel-id
+sin1::iad1::rgqkq-1785516706410-cf410f262a47
+:authority
+www.alightpro.my.id
+:method
+GET
+:path
+/api/stats
+:scheme
+https
+accept
+*/*
+accept-encoding
+gzip, deflate, br, zstd
+accept-language
+en-US,en;q=0.8
+cache-control
+no-cache
+cookie
+ai_user=daRMUW5cHLLZ6WzWFjEFxt|2026-07-31T16:51:14.603Z; ai_session=5NE+9Y2uDSqDDvxIlBCN40|1785516675568|1785516688522
+pragma
+no-cache
+priority
+u=1, i
+referer
+https://www.alightpro.my.id/
+sec-ch-ua
+"Not=A?Brand";v="99", "Brave";v="151", "Chromium";v="151"
+sec-ch-ua-mobile
+?0
+sec-ch-ua-platform
+"Windows"
+sec-fetch-dest
+empty
+sec-fetch-mode
+cors
+sec-fetch-site
+same-origin
+sec-gpc
+1
+user-agent
+Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36
+
+Request URL
+https://www.alightpro.my.id/api/stats/recent
+Request Method
+GET
+Status Code
+200 OK
+Remote Address
+216.198.79.1:443
+Referrer Policy
+strict-origin-when-cross-origin
+age
+0
+cache-control
+public, max-age=0, must-revalidate
+content-encoding
+br
+content-type
+application/json
+date
+Fri, 31 Jul 2026 16:51:46 GMT
+server
+Vercel
+strict-transport-security
+max-age=63072000
+vary
+rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch
+x-matched-path
+/api/stats/recent
+x-vercel-cache
+MISS
+x-vercel-id
+sin1::iad1::s9n54-1785516706410-08c68ab7640d
+:authority
+www.alightpro.my.id
+:method
+GET
+:path
+/api/stats/recent
+:scheme
+https
+accept
+*/*
+accept-encoding
+gzip, deflate, br, zstd
+accept-language
+en-US,en;q=0.8
+cache-control
+no-cache
+cookie
+ai_user=daRMUW5cHLLZ6WzWFjEFxt|2026-07-31T16:51:14.603Z; ai_session=5NE+9Y2uDSqDDvxIlBCN40|1785516675568|1785516688522
+pragma
+no-cache
+priority
+u=1, i
+referer
+https://www.alightpro.my.id/
+sec-ch-ua
+"Not=A?Brand";v="99", "Brave";v="151", "Chromium";v="151"
+sec-ch-ua-mobile
+?0
+sec-ch-ua-platform
+"Windows"
+sec-fetch-dest
+empty
+sec-fetch-mode
+cors
+sec-fetch-site
+same-origin
+sec-gpc
+1
+user-agent
+Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36
+
+Request URL
+https://www.alightpro.my.id/api/alight-motion
+Request Method
+POST
+Status Code
+200 OK
+Remote Address
+216.198.79.1:443
+Referrer Policy
+strict-origin-when-cross-origin
+access-control-allow-headers
+Content-Type, X-Requested-With, X-Amprem-Token, X-Amprem-Nonce, X-Amprem-Pow
+access-control-allow-methods
+POST
+access-control-allow-origin
+https://www.alightpro.my.id
+cache-control
+public, max-age=0, must-revalidate
+content-encoding
+br
+content-type
+application/json
+date
+Fri, 31 Jul 2026 16:54:34 GMT
+server
+Vercel
+strict-transport-security
+max-age=63072000
+vary
+rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch
+x-matched-path
+/api/alight-motion
+x-vercel-cache
+MISS
+x-vercel-id
+sin1::iad1::mnz6p-1785516873299-d3fc54b61010
+:authority
+www.alightpro.my.id
+:method
+POST
+:path
+/api/alight-motion
+:scheme
+https
+accept
+*/*
+accept-encoding
+gzip, deflate, br, zstd
+accept-language
+en-US,en;q=0.8
+content-length
+46
+content-type
+application/json
+cookie
+ai_user=daRMUW5cHLLZ6WzWFjEFxt|2026-07-31T16:51:14.603Z; ai_session=5NE+9Y2uDSqDDvxIlBCN40|1785516675568|1785516688522; __amprem_session=3beb02f2445fe05478757d9d74eaea68%3A1785516873158%3A3658fc82%3A14e9c98b4ab4db04e7b798184eac80c112cbfed3db3e6f8d8dc062ae2506b52d
+origin
+https://www.alightpro.my.id
+priority
+u=1, i
+referer
+https://www.alightpro.my.id/
+sec-ch-ua
+"Not=A?Brand";v="99", "Brave";v="151", "Chromium";v="151"
+sec-ch-ua-mobile
+?0
+sec-ch-ua-platform
+"Windows"
+sec-fetch-dest
+empty
+sec-fetch-mode
+cors
+sec-fetch-site
+same-origin
+sec-gpc
+1
+user-agent
+Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36
+x-amprem-nonce
+104815dde48bd90a409da016
+x-amprem-pow
+770681cf9a062f44cd21d8cacdca732319531a9632c3f4dac98b050b362aa7e2
+x-amprem-token
+d3fdb201d4e76cb30133b1bd4d842aab9f5db355a273ad1abd7db26ad89a7a0e
+x-requested-with
+XMLHttpRequest
+
+{"action":"send","email":"ar057746@gmail.com"}
+{"status":true,"msg":"Link berhasil dikirim."}
+
+Request URL
+https://www.alightpro.my.id/api/alight-motion
+Request Method
+POST
+Status Code
+200 OK
+Remote Address
+216.198.79.1:443
+Referrer Policy
+strict-origin-when-cross-origin
+access-control-allow-headers
+Content-Type, X-Requested-With, X-Amprem-Token, X-Amprem-Nonce, X-Amprem-Pow
+access-control-allow-methods
+POST
+access-control-allow-origin
+https://www.alightpro.my.id
+cache-control
+public, max-age=0, must-revalidate
+content-encoding
+br
+content-type
+application/json
+date
+Fri, 31 Jul 2026 16:59:27 GMT
+server
+Vercel
+strict-transport-security
+max-age=63072000
+vary
+rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch
+x-matched-path
+/api/alight-motion
+x-vercel-cache
+MISS
+x-vercel-id
+sin1::iad1::6h6bj-1785517160742-af8fa8e96782
+:authority
+www.alightpro.my.id
+:method
+POST
+:path
+/api/alight-motion
+:scheme
+https
+accept
+*/*
+accept-encoding
+gzip, deflate, br, zstd
+accept-language
+en-US,en;q=0.8
+content-length
+381
+content-type
+application/json
+cookie
+ai_user=daRMUW5cHLLZ6WzWFjEFxt|2026-07-31T16:51:14.603Z; ai_session=5NE+9Y2uDSqDDvxIlBCN40|1785516675568|1785516688522; __amprem_session=f22308c545288397eeaf379ad9fa1f40%3A1785517160596%3A3658fc82%3Aeffb70baec4c0f18241f4f77479a013b1681a61ee71cf466cb25f9319dbf72a4
+origin
+https://www.alightpro.my.id
+priority
+u=1, i
+referer
+https://www.alightpro.my.id/
+sec-ch-ua
+"Not=A?Brand";v="99", "Brave";v="151", "Chromium";v="151"
+sec-ch-ua-mobile
+?0
+sec-ch-ua-platform
+"Windows"
+sec-fetch-dest
+empty
+sec-fetch-mode
+cors
+sec-fetch-site
+same-origin
+sec-gpc
+1
+user-agent
+Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36
+x-amprem-nonce
+7167faba7f0e8a8db7befc7a
+x-amprem-pow
+887bb5779cefc0b32ca5d14dd879c520e6715bcaee020b089d0a7d94c7a276ec
+x-amprem-token
+9796e7b36ec88123560ff1092592a47bdbaa58490ddd3b1f5e07edbfd92356db
+x-requested-with
+XMLHttpRequest
+
+{"action":"verify","email":"ar057746@gmail.com","link":"https://alight-creative.firebaseapp.com/__/auth/links?link=https://alightcreative.com/auth_action/?apiKey%3DAIzaSyDrZ9jr_Y16ltSBqsQR5IH6I04FRga6Ki0%26mode%3DsignIn%26oobCode%3DuZlgPaQmHck5YOhwQeHIrIiouH14T755KcjJYJypt94AAAGfuRla7A%26continueUrl%3Dhttps://alightcreative.com?ui_sid%253D0366624874%2526ui_sd%253D0%26lang%3Den"}
+{
+    "status": true,
+    "data": {
+        "user": {
+            "kind": "identitytoolkit#GetAccountInfoResponse",
+            "users": [
+                {
+                    "localId": "27cdhI8a5JYlmFN55HWWrPymnUr1",
+                    "email": "ar057746@gmail.com",
+                    "displayName": "IbadPrem",
+                    "photoUrl": "https://firebasestorage.googleapis.com/v0/b/alight-creative.appspot.com/o/user%2Fp%2F27cdhI8a5JYlmFN55HWWrPymnUr1%2Fphoto%2F1784835468827.jpg?alt=media&token=ea06ba45-fc6f-4559-afba-6db4cb8eefd2",
+                    "emailVerified": true,
+                    "providerUserInfo": [
+                        {
+                            "providerId": "password",
+                            "displayName": "IbadPrem",
+                            "photoUrl": "https://firebasestorage.googleapis.com/v0/b/alight-creative.appspot.com/o/user%2Fp%2F27cdhI8a5JYlmFN55HWWrPymnUr1%2Fphoto%2F1784835468827.jpg?alt=media&token=ea06ba45-fc6f-4559-afba-6db4cb8eefd2",
+                            "federatedId": "ar057746@gmail.com",
+                            "email": "ar057746@gmail.com",
+                            "rawId": "ar057746@gmail.com"
+                        }
+                    ],
+                    "validSince": "1784826861",
+                    "lastLoginAt": "1785517161092",
+                    "createdAt": "1784826861933",
+                    "emailLinkSignin": true,
+                    "lastRefreshAt": "2026-07-31T16:59:21.092Z"
+                }
+            ]
+        },
+        "premium": {
+            "result": {
+                "status": "success",
+                "accountLinkStatus": "linked-current",
+                "source": "cache",
+                "autoRenewing": true,
+                "cancelReason": null,
+                "expiryTimeMillis": 1814627568734,
+                "startTimeMillis": 1783097673734,
+                "valid": true,
+                "testPurchase": false
+            }
+        }
+    }
+}

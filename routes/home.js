@@ -1,34 +1,50 @@
 const express = require('express');
-const axios = require('axios');
 const router = express.Router();
 
 module.exports = (api) => {
     router.get('/', async (req, res) => {
-        try {
-            const statUrl = api.buildUrl(api.endpoints.stats);
-            const response = await axios.get(statUrl, { headers: api.defaultHeaders });
+        // Safe default metrics agar EJS tidak error saat dipanggil
+        let currentMetrics = (api && api.metrics) ? api.metrics : {
+            successToday: 0,
+            totalVerified: 0,
+            isMongo: false
+        };
 
-            if (response.data && response.data.status) {
-                // Menyesuaikan dengan format JSON dari www.alightpro.my.id
-                api.updateMetrics({
-                    successToday: response.data.todayVerified,
-                    totalVerified: response.data.totalVerified,
-                    isMongo: response.data.isMongo
-                });
+        try {
+            // Mengambil data statistik menggunakan method bawaan ServerData
+            const statsResult = await api.getStats();
+            const statsData = statsResult.data;
+
+            if (statsData) {
+                const updatedData = {
+                    successToday: statsData.todayVerified ?? statsData.successToday ?? 0,
+                    totalVerified: statsData.totalVerified ?? 0,
+                    isMongo: statsData.isMongo ?? false
+                };
+
+                // Perbarui metrics di instance api jika method updateMetrics tersedia
+                if (typeof api.updateMetrics === 'function') {
+                    api.updateMetrics(updatedData);
+                    currentMetrics = api.metrics;
+                } else {
+                    api.metrics = updatedData;
+                    currentMetrics = updatedData;
+                }
             }
 
-            res.render('index', {
+            return res.render('index', {
                 title: 'Home - LyrenzDev',
                 active: 'home',
-                metrics: api.metrics
+                metrics: currentMetrics
             });
 
         } catch (error) {
-            console.error("Gagal mengambil data statistik:", error.message);
-            res.render('index', {
+            console.error('[Home Route Error] Gagal mengambil data statistik:', error.message);
+            
+            return res.render('index', {
                 title: 'Home - LyrenzDev',
                 active: 'home',
-                metrics: api.metrics
+                metrics: currentMetrics
             });
         }
     });
