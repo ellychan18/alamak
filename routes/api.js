@@ -4,16 +4,27 @@ const router = express.Router();
 
 module.exports = (api) => {
     
-    // Konfigurasi axios disesuaikan dengan script (Header polos + Timeout 60s)
+    // Konfigurasi axios disesuaikan dengan script referensi (Header polos + Timeout 60s)
     const axiosConfig = {
         headers: api.defaultHeaders,
         timeout: 60000
     };
 
+    // Fungsi canggih untuk mengubah format error apapun menjadi teks biasa
     const getErrorMessage = (error) => {
-        // Menangkap format error "error.response.data.message" atau "error.response.data.error"
         if (error.response && error.response.data) {
-            return error.response.data.message || error.response.data.error || `Error Server (Status ${error.response.status})`;
+            const data = error.response.data;
+            
+            // Jika ada pesan berupa teks langsung
+            if (typeof data.message === 'string') return data.message;
+            if (typeof data.error === 'string') return data.error;
+            
+            // Jika ternyata pesannya adalah Object/Array, kita paksa jadi format String JSON
+            if (typeof data === 'object') {
+                return JSON.stringify(data);
+            }
+            
+            return String(data);
         }
         return error.message || 'Koneksi ke server target terputus.';
     };
@@ -31,8 +42,9 @@ module.exports = (api) => {
             
             res.status(200).json(response.data);
         } catch (error) {
-            console.error('API Send Error:', error.message);
-            res.status(error?.response?.status || 500).json({ success: false, message: getErrorMessage(error) });
+            const errorMsg = getErrorMessage(error);
+            console.error('API Send Error:', errorMsg);
+            res.status(error?.response?.status || 500).json({ success: false, message: errorMsg });
         }
     });
 
@@ -49,8 +61,9 @@ module.exports = (api) => {
             
             res.status(200).json(response.data);
         } catch (error) {
-            console.error('API Verify Error:', error.message);
-            res.status(error?.response?.status || 500).json({ success: false, message: getErrorMessage(error) });
+            const errorMsg = getErrorMessage(error);
+            console.error('API Verify Error:', errorMsg);
+            res.status(error?.response?.status || 500).json({ success: false, message: errorMsg });
         }
     });
 
@@ -64,10 +77,12 @@ module.exports = (api) => {
             
             res.status(200).json(response.data);
         } catch (error) {
-            console.error('API Premium Error:', error.message);
-            res.status(error?.response?.status || 500).json({ success: false, message: getErrorMessage(error) });
+            const errorMsg = getErrorMessage(error);
+            console.error('API Premium Error:', errorMsg);
+            res.status(error?.response?.status || 500).json({ success: false, message: errorMsg });
         }
     });
 
     return router;
 };
+                          
