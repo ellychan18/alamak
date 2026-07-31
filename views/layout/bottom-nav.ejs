@@ -1,0 +1,27 @@
+<!-- Spacer agar konten paling bawah tidak tertutup oleh navigasi fixed -->
+<div class="h-24"></div>
+
+<!-- Bottom Navigation Fixed -->
+<div class="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-black z-50">
+    <div class="max-w-md mx-auto flex justify-around items-center p-2">
+        
+        <!-- Menu Home -->
+        <a href="/" class="flex flex-col items-center p-2 w-16 rounded-xl transition-all <%= typeof active !== 'undefined' && active === 'home' ? 'bg-[#a5c9fc] border-2 border-black neo-shadow-sm' : 'text-gray-500' %>">
+            <i class="fa-solid fa-house text-lg mb-1 <%= typeof active !== 'undefined' && active === 'home' ? 'text-black' : '' %>"></i>
+            <span class="text-[10px] font-bold <%= typeof active !== 'undefined' && active === 'home' ? 'text-black' : '' %>">Home</span>
+        </a>
+
+        <!-- Menu Aktivasi -->
+        <a href="/activation" class="flex flex-col items-center p-2 w-16 rounded-xl transition-all <%= typeof active !== 'undefined' && active === 'activation' ? 'bg-[#d2f4d6] border-2 border-black neo-shadow-sm' : 'text-gray-500' %>">
+            <i class="fa-solid fa-bolt text-lg mb-1 <%= typeof active !== 'undefined' && active === 'activation' ? 'text-black' : '' %>"></i>
+            <span class="text-[10px] font-bold <%= typeof active !== 'undefined' && active === 'activation' ? 'text-black' : '' %>">Aktivasi</span>
+        </a>
+
+        <!-- Menu Status -->
+        <a href="/status" class="flex flex-col items-center p-2 w-16 rounded-xl transition-all <%= typeof active !== 'undefined' && active === 'status' ? 'bg-[#fde047] border-2 border-black neo-shadow-sm' : 'text-gray-500' %>">
+            <i class="fa-solid fa-chart-pie text-lg mb-1 <%= typeof active !== 'undefined' && active === 'status' ? 'text-black' : '' %>"></i>
+            <span class="text-[10px] font-bold <%= typeof active !== 'undefined' && active === 'status' ? 'text-black' : '' %>">Status</span>
+        </a>
+
+    </div>
+</div>
