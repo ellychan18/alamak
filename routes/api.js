@@ -4,19 +4,16 @@ const router = express.Router();
 
 module.exports = (api) => {
     
+    // Konfigurasi axios disesuaikan dengan script (Header polos + Timeout 60s)
     const axiosConfig = {
-        headers: {
-            'Accept': 'application/json, text/plain, */*',
-            'Content-Type': 'application/json',
-            'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Mobile Safari/537.36',
-            'Referer': 'https://am.rafaelxd.my.id/dashboard?tab=activation'
-        }
+        headers: api.defaultHeaders,
+        timeout: 60000
     };
 
     const getErrorMessage = (error) => {
+        // Menangkap format error "error.response.data.message" atau "error.response.data.error"
         if (error.response && error.response.data) {
-            if (error.response.data.message) return error.response.data.message;
-            if (typeof error.response.data === 'string') return `Error Server Target (Status ${error.response.status})`;
+            return error.response.data.message || error.response.data.error || `Error Server (Status ${error.response.status})`;
         }
         return error.message || 'Koneksi ke server target terputus.';
     };
@@ -25,14 +22,17 @@ module.exports = (api) => {
     router.post('/send', async (req, res) => {
         try {
             const { email } = req.body;
-            // Ubah menjadi false agar request langsung menembak ke server asli
-            const targetUrl = api.buildUrl(api.endpoints.send, false); 
-            
+            if (!email) {
+                return res.status(400).json({ success: false, message: 'Email wajib diisi' });
+            }
+
+            const targetUrl = api.buildUrl(api.endpoints.send, false); // Direct request
             const response = await axios.post(targetUrl, { email: email }, axiosConfig);
+            
             res.status(200).json(response.data);
         } catch (error) {
             console.error('API Send Error:', error.message);
-            res.status(500).json({ success: false, message: getErrorMessage(error) });
+            res.status(error?.response?.status || 500).json({ success: false, message: getErrorMessage(error) });
         }
     });
 
@@ -40,14 +40,17 @@ module.exports = (api) => {
     router.post('/verify', async (req, res) => {
         try {
             const { email, rawLink } = req.body;
-            // Ubah menjadi false
-            const targetUrl = api.buildUrl(api.endpoints.verify, false);
-            
+            if (!email || !rawLink) {
+                return res.status(400).json({ success: false, message: 'Email dan Link OOB wajib diisi' });
+            }
+
+            const targetUrl = api.buildUrl(api.endpoints.verify, false); // Direct request
             const response = await axios.post(targetUrl, { email: email, rawLink: rawLink }, axiosConfig);
+            
             res.status(200).json(response.data);
         } catch (error) {
             console.error('API Verify Error:', error.message);
-            res.status(500).json({ success: false, message: getErrorMessage(error) });
+            res.status(error?.response?.status || 500).json({ success: false, message: getErrorMessage(error) });
         }
     });
 
@@ -55,14 +58,14 @@ module.exports = (api) => {
     router.post('/premium', async (req, res) => {
         try {
             const { email, idToken } = req.body;
-            // Ubah menjadi false
-            const targetUrl = api.buildUrl(api.endpoints.premium, false);
             
+            const targetUrl = api.buildUrl(api.endpoints.premium, false); // Direct request
             const response = await axios.post(targetUrl, { email: email, idToken: idToken }, axiosConfig);
+            
             res.status(200).json(response.data);
         } catch (error) {
             console.error('API Premium Error:', error.message);
-            res.status(500).json({ success: false, message: getErrorMessage(error) });
+            res.status(error?.response?.status || 500).json({ success: false, message: getErrorMessage(error) });
         }
     });
 
