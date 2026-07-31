@@ -13,20 +13,30 @@ module.exports = (api) => {
         }
     };
 
+    // Fungsi bantuan untuk mengekstrak pesan error dengan aman
+    const getErrorMessage = (error) => {
+        if (error.response && error.response.data) {
+            // Jika server target/proxy merespon dengan JSON
+            if (error.response.data.message) return error.response.data.message;
+            // Jika server target/proxy merespon dengan HTML/Teks (misal: diblokir Cloudflare)
+            if (typeof error.response.data === 'string') return `Error Server Target (Status ${error.response.status})`;
+        }
+        // Jika request gagal total (misal: timeout atau proxy mati)
+        return error.message || 'Koneksi ke server target terputus.';
+    };
+
     // POST /api/send
     router.post('/send', async (req, res) => {
         try {
             const { email } = req.body;
-            // Parameter diubah menjadi TRUE agar menggunakan proxy cors.caliph.my.id
+            // Gunakan true untuk proxy
             const targetUrl = api.buildUrl(api.endpoints.send, true); 
             
             const response = await axios.post(targetUrl, { email: email }, axiosConfig);
-            
             res.status(200).json(response.data);
         } catch (error) {
-            console.error('Error /api/send:', error?.response?.data || error.message);
-            const errorData = error?.response?.data || { success: false, message: 'Gagal mengirim email OOB. Server target tidak merespon.' };
-            res.status(error?.response?.status || 500).json(errorData);
+            console.error('API Send Error:', error.message);
+            res.status(500).json({ success: false, message: getErrorMessage(error) });
         }
     });
 
@@ -34,16 +44,13 @@ module.exports = (api) => {
     router.post('/verify', async (req, res) => {
         try {
             const { email, rawLink } = req.body;
-            // Parameter diubah menjadi TRUE
             const targetUrl = api.buildUrl(api.endpoints.verify, true);
             
             const response = await axios.post(targetUrl, { email: email, rawLink: rawLink }, axiosConfig);
-            
             res.status(200).json(response.data);
         } catch (error) {
-            console.error('Error /api/verify:', error?.response?.data || error.message);
-            const errorData = error?.response?.data || { success: false, message: 'Gagal memverifikasi OOB.' };
-            res.status(error?.response?.status || 500).json(errorData);
+            console.error('API Verify Error:', error.message);
+            res.status(500).json({ success: false, message: getErrorMessage(error) });
         }
     });
 
@@ -51,18 +58,16 @@ module.exports = (api) => {
     router.post('/premium', async (req, res) => {
         try {
             const { email, idToken } = req.body;
-            // Parameter diubah menjadi TRUE
             const targetUrl = api.buildUrl(api.endpoints.premium, true);
             
             const response = await axios.post(targetUrl, { email: email, idToken: idToken }, axiosConfig);
-            
             res.status(200).json(response.data);
         } catch (error) {
-            console.error('Error /api/premium:', error?.response?.data || error.message);
-            const errorData = error?.response?.data || { success: false, message: 'Gagal aktivasi premium.' };
-            res.status(error?.response?.status || 500).json(errorData);
+            console.error('API Premium Error:', error.message);
+            res.status(500).json({ success: false, message: getErrorMessage(error) });
         }
     });
 
     return router;
 };
+                
