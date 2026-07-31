@@ -68,7 +68,7 @@
 
             <!-- Navigasi Tab -->
             <div class="flex bg-gray-100 border-2 border-black rounded-xl mb-5 overflow-hidden">
-                <div id="tab1" class="flex-1 text-center py-2 bg-[#93c5fd] border-r-2 border-black border-b-2 border-b-black rounded-xl text-xs font-extrabold neo-shadow-sm relative z-10 transition-all">
+                <div id="tab1" class="flex-1 text-center py-2 bg-[#93c5fd] border-r-2 border-black border-b-2 border-b-black text-black font-extrabold text-xs neo-shadow-sm relative z-10 transition-all">
                     1. Email
                 </div>
                 <div id="tab2" class="flex-1 text-center py-2 text-xs font-extrabold text-gray-500 border-r-2 border-black transition-all">
@@ -91,7 +91,7 @@
                             class="w-full bg-white border-2 border-black rounded-xl py-3 pl-10 pr-3 text-sm font-bold placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400">
                     </div>
                     <p class="text-[10px] font-bold text-gray-500 mt-2 leading-relaxed">
-                        Sistem akan menginstruksikan server Alight Creative untuk mengirimkan link login OOB.
+                        Sistem akan menginstruksikan server Alight Creative untuk mengirimkan link login OOB ke email Anda.
                     </p>
                 </div>
                 <button type="submit" id="btnEmail" class="w-full bg-[#93c5fd] border-2 border-black rounded-xl py-3 text-sm font-extrabold neo-btn flex justify-center items-center gap-2">
@@ -118,17 +118,20 @@
                 <button type="submit" id="btnOob" class="w-full bg-[#a7f3d0] border-2 border-black rounded-xl py-3 text-sm font-extrabold neo-btn flex justify-center items-center gap-2">
                     <span>Proses Aktivasi Pro</span> <i class="fa-solid fa-bolt"></i>
                 </button>
+                <button type="button" id="btnBackToEmail" class="w-full text-center text-xs font-bold text-gray-500 underline pt-1">
+                    <i class="fa-solid fa-arrow-left"></i> Ganti Email
+                </button>
             </form>
 
             <!-- Step 3: Hasil (Hidden by default) -->
             <div id="resultStep" class="hidden text-center py-4">
                 <div id="resultIcon" class="w-20 h-20 mx-auto rounded-full border-4 border-black flex items-center justify-center text-4xl mb-4 neo-shadow">
-                    <!-- Icon will be injected by JS -->
+                    <!-- Icon disuntikkan via JavaScript -->
                 </div>
                 <h3 id="resultTitle" class="text-xl font-extrabold mb-2"></h3>
-                <p id="resultMessage" class="text-xs font-bold text-gray-600 mb-6"></p>
+                <p id="resultMessage" class="text-xs font-bold text-gray-600 mb-6 px-2 leading-relaxed"></p>
                 
-                <button onclick="location.reload()" class="bg-[#fde047] border-2 border-black rounded-xl px-6 py-3 text-sm font-extrabold neo-btn inline-block">
+                <button onclick="resetFlow()" class="bg-[#fde047] border-2 border-black rounded-xl px-6 py-3 text-sm font-extrabold neo-btn inline-block">
                     Verifikasi Ulang
                 </button>
             </div>
@@ -153,21 +156,23 @@
         
         const btnEmail = document.getElementById('btnEmail');
         const btnOob = document.getElementById('btnOob');
+        const btnBackToEmail = document.getElementById('btnBackToEmail');
         
         // State
-        let userEmail = '';
+        let userEmail = localStorage.getItem('alight_email') || '';
 
-        // Class Styling untuk Tab Aktif/Nonaktif
-        const activeTabClass = 'bg-[#93c5fd] border-b-2 border-b-black text-black neo-shadow-sm relative z-10'.split(' ');
-        const inactiveTabClass = 'text-gray-500 bg-transparent shadow-none z-0 border-b-0'.split(' ');
+        if (userEmail) {
+            document.getElementById('emailInput').value = userEmail;
+        }
 
-        function switchTab(tabToActivate) {
+        // Pengaturan Tab Styling
+        function setActiveTab(targetTab) {
             [tab1, tab2, tab3].forEach(t => {
-                t.classList.remove(...activeTabClass);
-                t.classList.add(...inactiveTabClass);
+                t.className = 'flex-1 text-center py-2 text-xs font-extrabold text-gray-500 border-r-2 border-black transition-all bg-transparent';
             });
-            tabToActivate.classList.remove(...inactiveTabClass);
-            tabToActivate.classList.add(...activeTabClass);
+            tab3.classList.remove('border-r-2'); // Tab terakhir tanpa border kanan
+
+            targetTab.className = 'flex-1 text-center py-2 bg-[#93c5fd] border-r-2 border-black border-b-2 border-b-black text-black font-extrabold text-xs neo-shadow-sm relative z-10 transition-all';
         }
 
         function setLoadingState(button, isLoading, originalText) {
@@ -186,7 +191,7 @@
             form1.classList.add('hidden');
             form2.classList.add('hidden');
             step3.classList.remove('hidden');
-            switchTab(tab3);
+            setActiveTab(tab3);
 
             const iconDiv = document.getElementById('resultIcon');
             const title = document.getElementById('resultTitle');
@@ -205,75 +210,73 @@
             }
         }
 
-        // Handle Submit Email
+        function resetFlow() {
+            localStorage.removeItem('alight_email');
+            location.reload();
+        }
+
+        btnBackToEmail.addEventListener('click', () => {
+            form2.classList.add('hidden');
+            form1.classList.remove('hidden');
+            setActiveTab(tab1);
+        });
+
+        // Handle Submit Email (Langkah 1)
         form1.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById('emailInput').value;
+            const email = document.getElementById('emailInput').value.trim();
             userEmail = email;
+            localStorage.setItem('alight_email', email);
             
             const originalText = btnEmail.innerHTML;
             setLoadingState(btnEmail, true, originalText);
 
             try {
-                // Asumsi endpoint Anda mengarah ke /api/send yang diatur di backend Node.js
+                // Mendukung endpoint universal maupun individual
                 const response = await fetch('/api/send', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: email })
+                    body: JSON.stringify({ action: 'send', email: email })
                 });
                 const result = await response.json();
 
                 if (result.success || response.ok) {
-                    // Pindah ke form OOB
                     form1.classList.add('hidden');
                     form2.classList.remove('hidden');
-                    switchTab(tab2);
+                    setActiveTab(tab2);
                 } else {
-                    alert('Gagal mengirim email: ' + (result.message || 'Coba lagi nanti.'));
+                    alert('Gagal mengirim email: ' + (result.message || 'Coba lagi beberapa saat lagi.'));
                 }
             } catch (error) {
-                alert('Terjadi kesalahan jaringan.');
+                alert('Terjadi kesalahan jaringan/server.');
             } finally {
                 setLoadingState(btnEmail, false, originalText);
             }
         });
 
-        // Handle Submit OOB
+        // Handle Submit OOB (Langkah 2)
         form2.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const rawLink = document.getElementById('oobInput').value;
+            const rawLink = document.getElementById('oobInput').value.trim();
             
             const originalText = btnOob.innerHTML;
             setLoadingState(btnOob, true, originalText);
 
             try {
-                // 1. Verifikasi Link OOB
                 const verifyRes = await fetch('/api/verify', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: userEmail, rawLink: rawLink })
+                    body: JSON.stringify({ action: 'verify', email: userEmail, rawLink: rawLink, link: rawLink })
                 });
                 const verifyData = await verifyRes.json();
 
-                if (verifyData.success && verifyData.idToken) {
-                    // 2. Jika sukses, otomatis tembak API Premium
-                    const premiumRes = await fetch('/api/premium', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email: userEmail, idToken: verifyData.idToken })
-                    });
-                    const premiumData = await premiumRes.json();
-
-                    if (premiumData.success) {
-                        showResult(true, premiumData.message || 'Status Premium VIP berhasil diaktifkan!');
-                    } else {
-                        showResult(false, premiumData.message || 'Gagal mengaktifkan premium.');
-                    }
+                if (verifyData.success) {
+                    showResult(true, verifyData.message || 'Akun Alight Motion Anda telah sukses diverifikasi menjadi VIP Pro!');
                 } else {
-                    showResult(false, verifyData.message || 'Gagal memverifikasi link OOB. Pastikan link benar dan belum kedaluwarsa.');
+                    showResult(false, verifyData.message || 'Gagal memverifikasi link OOB. Pastikan link lengkap dan belum kadaluwarsa.');
                 }
             } catch (error) {
-                showResult(false, 'Terjadi kesalahan sistem/jaringan saat memproses permintaan Anda.');
+                showResult(false, 'Terjadi kesalahan sistem saat memproses aktivasi.');
             } finally {
                 setLoadingState(btnOob, false, originalText);
             }
