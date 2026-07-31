@@ -7,8 +7,9 @@ module.exports = (api) => {
     router.get('/', async (req, res) => {
         try {
             // Membangun URL untuk mengambil statistik. 
-            // Parameter 'true' digunakan agar otomatis menggunakan proxy.
-            const statUrl = api.buildUrl(api.endpoints.statistics, true);
+            // Parameter diubah menjadi 'false' agar request langsung ke server target tanpa proxy
+            // (karena CORS tidak berlaku untuk request antar-server dari Node.js).
+            const statUrl = api.buildUrl(api.endpoints.statistics, false);
             
             // Melakukan request ke endpoint statistik
             const response = await axios.get(statUrl, {
@@ -20,7 +21,7 @@ module.exports = (api) => {
                 api.updateMetrics(response.data.metrics);
             }
 
-            // PERBAIKAN: Ganti 'home' menjadi 'index' agar mengarah ke views/index.ejs
+            // Render file views/index.ejs dengan data yang didapat
             res.render('index', {
                 title: 'Home - LyrenzDev',
                 active: 'home',
@@ -30,7 +31,7 @@ module.exports = (api) => {
         } catch (error) {
             console.error("Gagal mengambil data statistik:", error.message);
             
-            // PERBAIKAN: Ganti 'home' menjadi 'index' di bagian catch juga
+            // Tetap render halaman menggunakan data metrics bawaan jika terjadi error
             res.render('index', {
                 title: 'Home - LyrenzDev',
                 active: 'home',
