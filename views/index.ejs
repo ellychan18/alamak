@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <%- include('layout/head') %>
+</head>
+<body class="text-gray-900 antialiased relative">
+
+    <%- include('layout/navbar') %>
+
+    <main class="max-w-md mx-auto p-4 space-y-6">
+        
+        <!-- CARD STATISTIK VERIFIKASI -->
+        <div class="bg-[#fde047] border-2 border-black rounded-2xl p-4 neo-shadow">
+            <div class="flex justify-between items-start mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white border-2 border-black rounded-xl flex items-center justify-center">
+                        <i class="fa-solid fa-users text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-extrabold leading-none">STATISTIK VERIFIKASI REAL</h3>
+                        <p class="text-[10px] font-bold text-gray-700">Live Real-Time Database</p>
+                    </div>
+                </div>
+                <span class="bg-[#a7f3d0] border-2 border-black text-[10px] font-extrabold px-3 py-1 rounded-full flex items-center gap-1 neo-shadow-sm">
+                    <div class="w-2 h-2 bg-green-600 rounded-full animate-pulse"></div> LIVE
+                </span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <div class="bg-white border-2 border-black rounded-xl p-3 neo-shadow-sm">
+                    <div class="flex items-center gap-1 text-blue-600 mb-1">
+                        <i class="fa-regular fa-calendar text-[10px]"></i>
+                        <span class="text-[10px] font-extrabold">HARI INI</span>
+                    </div>
+                    <h4 class="text-3xl font-extrabold" id="statToday"><%= typeof metrics !== 'undefined' ? metrics.successToday : '18' %></h4>
+                    <p class="text-[10px] font-bold text-gray-500"><span id="statTodayText"><%= typeof metrics !== 'undefined' ? metrics.successToday : '18' %></span> Terverifikasi</p>
+                </div>
+                
+                <div class="bg-[#93c5fd] border-2 border-black rounded-xl p-3 neo-shadow-sm">
+                    <div class="flex items-center gap-1 text-pink-600 mb-1">
+                        <i class="fa-solid fa-wand-magic-sparkles text-[10px]"></i>
+                        <span class="text-[10px] font-extrabold">TOTAL SUKSES</span>
+                    </div>
+                    <h4 class="text-3xl font-extrabold">14.9K</h4>
+                    <p class="text-[10px] font-bold text-gray-800">14.862 Akun Pro</p>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center border-t-2 border-black border-dashed pt-3">
+                <div class="flex items-center gap-1 text-[10px] font-extrabold text-green-700">
+                    <i class="fa-solid fa-shield-check"></i> Terverifikasi Otomatis
+                </div>
+                <span class="bg-white border-2 border-black px-2 py-0.5 rounded-md text-[9px] font-bold text-gray-600 flex items-center gap-1">
+                    <i class="fa-solid fa-database text-blue-500"></i> mongodb
+                </span>
+            </div>
+        </div>
+
+        <!-- PANEL VERIFIKASI PRO -->
+        <div class="bg-white border-2 border-black rounded-2xl p-4 neo-shadow">
+            <!-- Mac OS Dots -->
+            <div class="flex items-center gap-1.5 mb-4 border-b-2 border-black pb-3">
+                <div class="w-3 h-3 bg-red-500 border border-black rounded-full"></div>
+                <div class="w-3 h-3 bg-yellow-400 border border-black rounded-full"></div>
+                <div class="w-3 h-3 bg-green-500 border border-black rounded-full"></div>
+                <span class="ml-2 text-[10px] font-extrabold tracking-wide uppercase text-gray-600">Panel Verifikasi Pro</span>
+            </div>
+
+            <!-- Navigasi Tab -->
+            <div class="flex bg-gray-100 border-2 border-black rounded-xl mb-5 overflow-hidden">
+                <div id="tab1" class="flex-1 text-center py-2 bg-[#93c5fd] border-r-2 border-black border-b-2 border-b-black rounded-xl text-xs font-extrabold neo-shadow-sm relative z-10 transition-all">
+                    1. Email
+                </div>
+                <div id="tab2" class="flex-1 text-center py-2 text-xs font-extrabold text-gray-500 border-r-2 border-black transition-all">
+                    2. Tempel OOB
+                </div>
+                <div id="tab3" class="flex-1 text-center py-2 text-xs font-extrabold text-gray-500 transition-all">
+                    3. Hasil Pro
+                </div>
+            </div>
+
+            <!-- Form Step 1: Email -->
+            <form id="emailForm" class="space-y-4">
+                <div>
+                    <label class="block text-[11px] font-extrabold mb-2 uppercase">Alamat Email Alight Creative</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <i class="fa-regular fa-envelope text-gray-400"></i>
+                        </div>
+                        <input type="email" id="emailInput" required placeholder="contoh: emailkamu@gmail.com" 
+                            class="w-full bg-white border-2 border-black rounded-xl py-3 pl-10 pr-3 text-sm font-bold placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                    </div>
+                    <p class="text-[10px] font-bold text-gray-500 mt-2 leading-relaxed">
+                        Sistem akan menginstruksikan server Alight Creative untuk mengirimkan link login OOB.
+                    </p>
+                </div>
+                <button type="submit" id="btnEmail" class="w-full bg-[#93c5fd] border-2 border-black rounded-xl py-3 text-sm font-extrabold neo-btn flex justify-center items-center gap-2">
+                    <span>Kirim Link OOB (Langkah 1)</span> <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </form>
+
+            <!-- Form Step 2: Tempel OOB (Hidden by default) -->
+            <form id="oobForm" class="space-y-4 hidden">
+                <div class="bg-blue-50 border-2 border-black rounded-xl p-3 mb-2 flex items-start gap-2">
+                    <i class="fa-solid fa-circle-info text-blue-500 mt-0.5"></i>
+                    <p class="text-[10px] font-bold text-gray-700">Link OOB telah dikirim ke email Anda. Silakan cek Inbox atau folder Spam, salin link (Copy Link Address) pada tombol "Log In", dan tempel di bawah.</p>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-extrabold mb-2 uppercase">Link OOB / Verifikasi</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <i class="fa-solid fa-link text-gray-400"></i>
+                        </div>
+                        <input type="url" id="oobInput" required placeholder="https://alight-creative..." 
+                            class="w-full bg-white border-2 border-black rounded-xl py-3 pl-10 pr-3 text-sm font-bold placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-400">
+                    </div>
+                </div>
+                <button type="submit" id="btnOob" class="w-full bg-[#a7f3d0] border-2 border-black rounded-xl py-3 text-sm font-extrabold neo-btn flex justify-center items-center gap-2">
+                    <span>Proses Aktivasi Pro</span> <i class="fa-solid fa-bolt"></i>
+                </button>
+            </form>
+
+            <!-- Step 3: Hasil (Hidden by default) -->
+            <div id="resultStep" class="hidden text-center py-4">
+                <div id="resultIcon" class="w-20 h-20 mx-auto rounded-full border-4 border-black flex items-center justify-center text-4xl mb-4 neo-shadow">
+                    <!-- Icon will be injected by JS -->
+                </div>
+                <h3 id="resultTitle" class="text-xl font-extrabold mb-2"></h3>
+                <p id="resultMessage" class="text-xs font-bold text-gray-600 mb-6"></p>
+                
+                <button onclick="location.reload()" class="bg-[#fde047] border-2 border-black rounded-xl px-6 py-3 text-sm font-extrabold neo-btn inline-block">
+                    Verifikasi Ulang
+                </button>
+            </div>
+
+        </div>
+
+    </main>
+
+    <%- include('layout/footer') %>
+    <%- include('layout/bottom-nav', { active: 'home' }) %>
+
+    <!-- SCRIPT LOGIKA ALUR VERIFIKASI -->
+    <script>
+        // DOM Elements
+        const form1 = document.getElementById('emailForm');
+        const form2 = document.getElementById('oobForm');
+        const step3 = document.getElementById('resultStep');
+        
+        const tab1 = document.getElementById('tab1');
+        const tab2 = document.getElementById('tab2');
+        const tab3 = document.getElementById('tab3');
+        
+        const btnEmail = document.getElementById('btnEmail');
+        const btnOob = document.getElementById('btnOob');
+        
+        // State
+        let userEmail = '';
+
+        // Class Styling untuk Tab Aktif/Nonaktif
+        const activeTabClass = 'bg-[#93c5fd] border-b-2 border-b-black text-black neo-shadow-sm relative z-10'.split(' ');
+        const inactiveTabClass = 'text-gray-500 bg-transparent shadow-none z-0 border-b-0'.split(' ');
+
+        function switchTab(tabToActivate) {
+            [tab1, tab2, tab3].forEach(t => {
+                t.classList.remove(...activeTabClass);
+                t.classList.add(...inactiveTabClass);
+            });
+            tabToActivate.classList.remove(...inactiveTabClass);
+            tabToActivate.classList.add(...activeTabClass);
+        }
+
+        function setLoadingState(button, isLoading, originalText) {
+            if (isLoading) {
+                button.disabled = true;
+                button.classList.add('opacity-70', 'cursor-not-allowed');
+                button.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Memproses...</span>`;
+            } else {
+                button.disabled = false;
+                button.classList.remove('opacity-70', 'cursor-not-allowed');
+                button.innerHTML = originalText;
+            }
+        }
+
+        function showResult(success, message) {
+            form1.classList.add('hidden');
+            form2.classList.add('hidden');
+            step3.classList.remove('hidden');
+            switchTab(tab3);
+
+            const iconDiv = document.getElementById('resultIcon');
+            const title = document.getElementById('resultTitle');
+            const msg = document.getElementById('resultMessage');
+
+            if (success) {
+                iconDiv.className = 'w-20 h-20 mx-auto bg-[#a7f3d0] rounded-full border-4 border-black flex items-center justify-center text-4xl mb-4 neo-shadow-sm';
+                iconDiv.innerHTML = '<i class="fa-solid fa-check text-green-700"></i>';
+                title.innerText = 'Aktivasi Berhasil!';
+                msg.innerText = message;
+            } else {
+                iconDiv.className = 'w-20 h-20 mx-auto bg-[#fecaca] rounded-full border-4 border-black flex items-center justify-center text-4xl mb-4 neo-shadow-sm';
+                iconDiv.innerHTML = '<i class="fa-solid fa-xmark text-red-700"></i>';
+                title.innerText = 'Verifikasi Gagal';
+                msg.innerText = message;
+            }
+        }
+
+        // Handle Submit Email
+        form1.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('emailInput').value;
+            userEmail = email;
+            
+            const originalText = btnEmail.innerHTML;
+            setLoadingState(btnEmail, true, originalText);
+
+            try {
+                // Asumsi endpoint Anda mengarah ke /api/send yang diatur di backend Node.js
+                const response = await fetch('/api/send', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email })
+                });
+                const result = await response.json();
+
+                if (result.success || response.ok) {
+                    // Pindah ke form OOB
+                    form1.classList.add('hidden');
+                    form2.classList.remove('hidden');
+                    switchTab(tab2);
+                } else {
+                    alert('Gagal mengirim email: ' + (result.message || 'Coba lagi nanti.'));
+                }
+            } catch (error) {
+                alert('Terjadi kesalahan jaringan.');
+            } finally {
+                setLoadingState(btnEmail, false, originalText);
+            }
+        });
+
+        // Handle Submit OOB
+        form2.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const rawLink = document.getElementById('oobInput').value;
+            
+            const originalText = btnOob.innerHTML;
+            setLoadingState(btnOob, true, originalText);
+
+            try {
+                // 1. Verifikasi Link OOB
+                const verifyRes = await fetch('/api/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: userEmail, rawLink: rawLink })
+                });
+                const verifyData = await verifyRes.json();
+
+                if (verifyData.success && verifyData.idToken) {
+                    // 2. Jika sukses, otomatis tembak API Premium
+                    const premiumRes = await fetch('/api/premium', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: userEmail, idToken: verifyData.idToken })
+                    });
+                    const premiumData = await premiumRes.json();
+
+                    if (premiumData.success) {
+                        showResult(true, premiumData.message || 'Status Premium VIP berhasil diaktifkan!');
+                    } else {
+                        showResult(false, premiumData.message || 'Gagal mengaktifkan premium.');
+                    }
+                } else {
+                    showResult(false, verifyData.message || 'Gagal memverifikasi link OOB. Pastikan link benar dan belum kedaluwarsa.');
+                }
+            } catch (error) {
+                showResult(false, 'Terjadi kesalahan sistem/jaringan saat memproses permintaan Anda.');
+            } finally {
+                setLoadingState(btnOob, false, originalText);
+            }
+        });
+    </script>
+</body>
+</html>
